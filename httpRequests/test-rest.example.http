@@ -1,0 +1,47 @@
+### Test PPTX Analysis
+POST localhost:8000/analyse/
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+Accept-Language: en
+X-API-Key: secret-api-key
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="PPTX_example_01.pptx"
+Content-Type: application/vnd.openxmlformats-officedocument.presentationml.presentation
+
+< C:/tmp/PPTX_example_01.pptx
+--WebAppBoundary--
+
+
+### Test PPTX Analysis with Config List
+POST http://localhost:8000/analyse/
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+Accept-Language: en
+X-API-Key: secret-api-key
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="Rules_test_01.pptx"
+
+< C:\tmp\Rules_test_01.pptx
+--WebAppBoundary
+Content-Disposition: form-data; name="rules"
+
+TEXT_MAX_FONTS:2
+--WebAppBoundary
+Content-Disposition: form-data; name="rules"
+
+TEXT_MAX_BULLET_POINTS_PER_SLIDE:2
+--WebAppBoundary--
+
+
+### Test PDF Analysis
+POST localhost:8000/analyse/
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+Accept-Language: en
+X-API-Key: secret-api-key
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="PDF_example_01.pdf"
+Content-Type: application/pdf
+
+< C:/tmp/PDF_example_01.pdf
+--WebAppBoundary--

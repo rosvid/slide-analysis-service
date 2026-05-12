@@ -1,0 +1,108 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-10 18:35+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: .\app\core\enums.py:15
+msgid "The minimum level of conformance for contrast ratio between text and background colors (WCAG 2.2)."
+msgstr "Der minimale Konformitätsgrad für das Kontrastverhältnis zwischen Text- und Hintergrundfarben (WCAG 2.2)."
+
+#: .\app\core\enums.py:17
+msgid "The maximum number of images that can be used per slide in presentations."
+msgstr "Die maximale Anzahl von Schriftarten, die in Präsentationen verwendet werden kann."
+
+#: .\app\core\enums.py:18
+msgid "The maximum number of animations that can be used per slide in presentations."
+msgstr "Die maximale Anzahl von Schriftarten, die in Präsentationen verwendet werden kann."
+
+#: .\app\core\enums.py:19
+msgid "The minimum PPI (pixels per inch) that images should have in presentations."
+msgstr "Die minimale PPI (Pixel pro Zoll), die Bilder in Präsentationen haben sollten."
+
+#: .\app\core\enums.py:21
+msgid "The maximum number of words per row that can be used in slides."
+msgstr "Die maximale Anzahl von Wörtern pro Zeile, die in Folien verwendet werden kann."
+
+#: .\app\core\enums.py:22
+msgid "The maximum number of words per slide that can be used in presentations."
+msgstr "Die maximale Anzahl von Wörtern pro Folie, die in Präsentationen verwendet werden kann."
+
+#: .\app\core\enums.py:23
+msgid "The maximum number of bullet points per slide that can be used in presentations."
+msgstr "Die maximale Anzahl von Aufzählungspunkten pro Folie, die in Präsentationen verwendet werden kann."
+
+#: .\app\core\enums.py:24
+msgid "The maximum number of fonts that can be used in presentations."
+msgstr "Die maximale Anzahl von Schriftarten, die in Präsentationen verwendet werden kann."
+
+#: .\app\core\enums.py:25
+msgid "The minimum font size that can be used in presentations."
+msgstr "Die minimale Schriftgröße, die in Präsentationen verwendet werden kann."
+
+#: .\app\core\rules\layout\contrast_ratio_rule.py:108
+#, python-format
+msgid "Insufficient contrast ratio for character '%(text)s' in context: '%(context_snippet)s'."
+msgstr "Unzureichendes Kontrastverhältnis für das Zeichen '%(text)s' im Kontext: '%(context_snippet)s'."
+
+#: .\app\core\rules\media\max_animations_per_slide_rule.py:29
+#, python-format
+msgid "Slide contains %(animation_count)d animations, which exceeds the recommended maximum of %(max)d."
+msgstr "Folie enthält %(animation_count)d Animationen, was die empfohlene Höchstzahl von %(max)d überschreitet."
+
+#: .\app\core\rules\media\max_images_per_slide_rule.py:33
+#, python-format
+msgid "Slide contains %(image_count)d images, which exceeds the recommended maximum of %(max)d."
+msgstr "Folie enthält %(image_count)d Bilder, was die empfohlene Höchstzahl von %(max)d überschreitet."
+
+#: .\app\core\rules\media\min_image_ppi_rule.py:54
+#, python-format
+msgid "Image '%(shape_name)s' has an effective resolution of %(lowest_ppi)s PPI, which is below the recommended minimum of %(min_ppi)s PPI."
+msgstr "Folie enthält ein Bild '%(shape_name)s' mit einer niedrigen effektiven PPI von %(lowest_ppi)s, die unter dem empfohlenen Minimum von %(min_ppi)s liegt."
+
+#: .\app\core\rules\text\max_bullet_points_per_slide_rule.py:91
+#, python-format
+msgid "Slide contains %(count)d bullet points, which exceeds the recommended maximum of %(max)d."
+msgstr "Folie enthält %(count)d Aufzählungspunkte, was die empfohlene Höchstzahl von %(max)d überschreitet."
+
+#: .\app\core\rules\text\max_fonts_rule.py:35
+#, python-format
+msgid "Presentation uses %(count)d different fonts, which exceeds the maximum allowed of %(max)d."
+msgstr "Präsentation verwendet %(count)d verschiedene Schriftarten, was die zulässige Höchstzahl von %(max)d überschreitet."
+
+#: .\app\core\rules\text\max_words_per_row_rule.py:38
+#, python-format
+msgid "Row contains %(count)d words, which exceeds the recommended maximum of %(max)d."
+msgstr "Zeile enthält %(count)d Wörter, was die empfohlene Höchstzahl von %(max)d überschreitet."
+
+#: .\app\core\rules\text\max_words_per_slide_rule.py:37
+#, python-format
+msgid "Slide contains %(word_count)d words, which exceeds the recommended maximum of %(max)d."
+msgstr "Folie enthält %(word_count)d Wörter, was die empfohlene Höchstzahl von %(max)d überschreitet."
+
+#: .\app\core\rules\text\min_font_size_rule.py:49
+#, python-format
+msgid "Slide uses character '%(text)s' with size %(font_size)d, which is less than the recommended size of %(min)d."
+msgstr "Folie verwendet für das Zeichen '%(text)s' die Schriftgröße %(font_size)d, was unter der empfohlenen Mindestgröße von %(min)d liegt."
+
+#: .\app\settings\settings.py:171
+msgid "English"
+msgstr "Englisch"
+
+#: .\app\settings\settings.py:172
+msgid "German"
+msgstr "Deutsch"

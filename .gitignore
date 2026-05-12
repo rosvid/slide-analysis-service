@@ -1,0 +1,35 @@
+# IDE related
+.idea/
+*.iml
+.venv/
+
+# Python related
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django related
+*.log
+mydatabase
+*.sqlite3
+django.mo
+
+# App related
+.tmp/
+/test_slides/
+/app/scripts/
+/app/evaluation_presentations/
+
+# HTTP REST test environment
+/httpRequests/*
+!/httpRequests/test-rest.example.http
+
+# Keep the fonts directory, ignore everything inside it.
+/fonts/*
+!/fonts/.gitkeep
+
+# Env files
+.env
+.env.*
+!.env.example
+!.env.docker.example

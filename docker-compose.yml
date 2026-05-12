@@ -1,0 +1,22 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - unoserver
+    env_file:
+      - ./app/.env.docker
+    environment:
+      - UNOSERVER_HOST=unoserver
+      - UNOSERVER_PORT=2003
+    volumes:
+      - .:/project  # only needed for development (debugging)
+
+  # LibreOffice Server
+  unoserver:
+    image: ghcr.io/unoconv/unoserver-docker:0.4.4
+    ports:
+      - "2003:2003" # LibreOffice UNO Port
+    volumes:
+      - ${FONTS_DIR}:/usr/share/fonts/truetype/custom:ro
