@@ -19,7 +19,7 @@ def get_latest_powerpoint(directory: str) -> Optional[Path]:
     if not powerpoint_files:
         latest_file = None
     else:
-        # Find the latest PPTX file.
+        # Find the latest PowerPoint file.
         latest_file = max(powerpoint_files, key=lambda x: x.stat().st_mtime)
 
     return latest_file
@@ -55,39 +55,45 @@ def get_ppt_files_from_directory(directory: str) -> list[Path]:
     return ppt_files
 
 
-def convert_pptx_to_pdf(pptx_path: Path, output_dir: Path) -> Path:
+def _convert_with_unoserver(input_path: Path, output_dir: Path, target_format: str) -> Path:
     """
-    Converts a PowerPoint file to PDF using UnoServer via UnoClient.
+    Generic conversion function using UnoServer via UnoClient.
     """
     uno_host = settings.UNOSERVER_HOST
     uno_port = settings.UNOSERVER_PORT
 
-    if not pptx_path.exists():
-        raise FileNotFoundError(f"Input file not found: {pptx_path}")
+    if not input_path.exists():
+        raise FileNotFoundError(f"Input file not found: {input_path}")
 
     output_dir.mkdir(parents=True, exist_ok=True)
-    pdf_path = output_dir / f"{pptx_path.stem}.pdf"
+    output_path = output_dir / f"{input_path.stem}.{target_format}"
 
     try:
         client = UnoClient(uno_host, uno_port)
 
-        with open(pptx_path, "rb") as f:
-            file_data = f.read()
+        file_data = input_path.read_bytes()
 
-        pdf_bytes = client.convert(
-            convert_to="pdf",
+        converted_bytes = client.convert(
+            convert_to=target_format,
             indata=file_data,
         )
 
-        with open(pdf_path, "wb") as f:
-            f.write(pdf_bytes)
+        output_path.write_bytes(converted_bytes)
 
-        logger.debug(f"Successfully converted {pptx_path} to {pdf_path} using UnoServer at {uno_host}:{uno_port}")
+        logger.debug(f"Successfully converted {input_path} to {output_path} using UnoServer at {uno_host}:{uno_port}")
 
     except Exception as e:
         raise RuntimeError(f"UnoServer error ({uno_host}:{uno_port}): {e}") from e
 
-    return pdf_path
+    return output_path
+
+
+def convert_ppt_to_pptx(ppt_path: Path, output_dir: Path) -> Path:
+    return _convert_with_unoserver(ppt_path, output_dir, "pptx")
+
+
+def convert_pptx_to_pdf(pptx_path: Path, output_dir: Path) -> Path:
+    return _convert_with_unoserver(pptx_path, output_dir, "pdf")
 
 
 def convert_pptx_to_pdf_with_local_libreoffice(pptx_path: Path) -> Path:

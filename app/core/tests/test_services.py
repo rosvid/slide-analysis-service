@@ -21,9 +21,7 @@ class ServicesTest(SimpleTestCase):
 
         rules_config = []
         analyser_service = AnalyserService()
-
-        with open(pptx_file, "rb") as ppt_file:
-            analysis_result_dto = analyser_service.analyse(ppt_file, rules_config)
+        analysis_result_dto = analyser_service.analyse(pptx_file, rules_config)
 
         serializer = AnalysisResultDtoSerializer(instance=analysis_result_dto)
         serialized_data = serializer.data

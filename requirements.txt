@@ -1,4 +1,4 @@
-Django~=6.0.5
+Django~=6.0.6
 django-environ~=0.13.0
 django-cors-headers~=4.9.0
 djangorestframework~=3.17.1
@@ -15,5 +15,6 @@ opencv-python-headless~=4.13.0.92
 numpy==2.2.6
 colour~=0.1.5
 unoserver==3.4
-pypdf~=6.11.0
-pypdfium2~=5.8.0
+pypdf~=6.13.2
+pypdfium2~=5.9.0
+requests~=2.34.2

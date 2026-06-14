@@ -1,7 +1,6 @@
 from django.utils.translation import gettext as _
-from pypdfium2 import PdfDocument
-from pptx.enum.shapes import MSO_SHAPE_TYPE
 from pptx.presentation import Presentation
+from pypdfium2 import PdfDocument
 
 from core.dtos import IssueDto, RuleResultDto
 from core.enums import RuleId
@@ -28,16 +27,16 @@ class MinImagePpiRule(BaseRule):
                     if hasattr(shape, "image") and shape.image is not None:
                         image = shape.image
                         image_pixels_w, image_pixels_h = image.size
-                        shape_cm_w = shape.width.cm
-                        shape_cm_h = shape.height.cm
+                        shape_w_inch = shape.width.inches
+                        shape_h_inch = shape.height.inches
 
                         # Extract the description (alternative text) from the XML.
                         descr_matches = shape.element.xpath(".//p:cNvPr/@descr")
                         description = descr_matches[0] if descr_matches else ""
 
                         # Calculate effective PPI (image could be stretched or shrunk).
-                        effective_ppi_w = image_pixels_w / shape_cm_w
-                        effective_ppi_h = image_pixels_h / shape_cm_h
+                        effective_ppi_w = image_pixels_w / shape_w_inch
+                        effective_ppi_h = image_pixels_h / shape_h_inch
 
                         # Check if either horizontal or vertical PPI is below the minimum.
                         if effective_ppi_w < self.min_ppi or effective_ppi_h < self.min_ppi:
@@ -63,7 +62,7 @@ class MinImagePpiRule(BaseRule):
                                     "effective_ppi_h": int(effective_ppi_h),
                                     "min_ppi": self.min_ppi,
                                     "original_pixels": f"{image_pixels_w}x{image_pixels_h}",
-                                    "rendered_cm": f"{round(shape_cm_w, 2)}x{round(shape_cm_h, 2)}",
+                                    "rendered_cm": f"{round(shape.width.cm, 2)}x{round(shape.height.cm, 2)}",
                                     "position_cm": f"Left: {round(shape_left, 2)}, Top: {round(shape_top, 2)}"
                                 }
                             )

@@ -19,7 +19,7 @@ from core.dtos import AnalysisResultDto, FileInfoDto, SummaryDto, SlideResultDto
 from core.enums import RuleId
 from core.rules.base_rule import BaseRule
 from core.utils.fonts_utils import get_used_base_fonts_in_pptx, check_font_substitution, get_used_fonts_from_pdf_path
-from core.utils.main_utils import convert_pptx_to_pdf
+from core.utils.main_utils import convert_ppt_to_pptx, convert_pptx_to_pdf
 
 logger = logging.getLogger(__name__)
 
@@ -28,10 +28,11 @@ class AnalyserService:
     """
     Manages the analysis of uploaded files using various rules and handlers (for different format).
     """
+
     def __init__(self):
         self.handlers = {
             ".pptx": _analyse_pptx,
-            ".ppt": _analyse_pptx,
+            ".ppt": _analyse_ppt,
             # Example for possible PDF analysis.
             ".pdf": _analyse_pdf,
         }
@@ -113,6 +114,7 @@ class RulesService:
     """
     Contains services to receive and manage a collection of rules.
     """
+
     def __init__(self):
         self.rules = [rule_class() for rule_class in _REGISTERED_RULES]
 
@@ -135,32 +137,6 @@ class RulesService:
                     "parameters": rule.get_parameters(),
                 }
         return None
-
-
-def _load_rules_deprecated() -> list[BaseRule]:
-    """
-    Dynamically load all rule classes from the "rules" directory.
-    """
-    loaded_rules = []
-    rules_dir = Path(__file__).parent / "rules"
-
-    # Find all Python files in the rules directory, excluding __init__.py and base_rule.py.
-    for rule_file in rules_dir.rglob("*.py"):
-        if rule_file.name.startswith("__") or rule_file.name == "base_rule.py":
-            continue
-        module_name = rule_file.stem
-        module_path = rule_file.parent.relative_to(rules_dir).as_posix()
-        module_full_name = f"app.core.rules.{module_path}.{module_name}"
-        try:
-            module = __import__(module_full_name, fromlist=[module_name])
-            for attr in dir(module):
-                cls = getattr(module, attr)
-                if isinstance(cls, type) and issubclass(cls, BaseRule) and cls is not BaseRule:
-                    loaded_rules.append(cls())
-        except ImportError as e:
-            logger.exception(f"Error importing {module_full_name}: {e}")
-
-    return loaded_rules
 
 
 def _load_rules() -> list[type[BaseRule]]:
@@ -204,7 +180,7 @@ def _analyse_pptx(presentation_file, file_extension, rules: list[BaseRule]):
     run_tmp_dir = Path(settings.TMP_DIR) / subfolder_name
     run_tmp_dir.mkdir(parents=True, exist_ok=True)
 
-    # create a temporary file to store the uploaded presentation
+    # Create a temporary file to store the uploaded presentation.
     with NamedTemporaryFile(delete=False, suffix=file_extension, dir=run_tmp_dir) as tmp:
         if isinstance(presentation_file, Path):
             tmp.write(presentation_file.read_bytes())
@@ -221,7 +197,7 @@ def _analyse_pptx(presentation_file, file_extension, rules: list[BaseRule]):
         global_issues_collection: dict[RuleId, list[IssueDto]] = {}
         slide_issues_collection: dict[RuleId, dict[int, list[IssueDto]]] = {}
 
-        # check installed fonts after pdf conversion
+        # Check installed fonts after pdf conversion.
         pptx_fonts = get_used_base_fonts_in_pptx(pptx)
         logger.debug(f"Fonts used or embedded in PPTX: {pptx_fonts}")
         pdf_fonts = get_used_fonts_from_pdf_path(pdf_path)
@@ -238,7 +214,7 @@ def _analyse_pptx(presentation_file, file_extension, rules: list[BaseRule]):
             logger.warning("Solution, if there are fonts missing in Docker setup: Mount the directory containing the missing fonts (.ttf/.otf files) into the unoserver container via your docker-compose.yml.")
             logger.warning("=" * 60)
 
-        # iterate through each rule and apply it to the presentation
+        # Iterate through each rule and apply it to the presentation.
         for rule in rules:
             logger.debug(f"Applying rule {rule.rule_id.value} to presentation {presentation_file.name}")
             debug_start_rule = perf_counter()  # performance measurements for debugging
@@ -302,12 +278,49 @@ def _analyse_pptx(presentation_file, file_extension, rules: list[BaseRule]):
 
     finally:
         if settings.DEBUG:
-            logger.debug(f"DEBUG mode is on. Not removing temporary file: {tmp_path} and {pdf_path}.")
+            logger.debug(f"DEBUG mode is on. Not removing temporary files: {tmp_path} and {pdf_path}.")
         else:
             if tmp_path.exists():
                 os.remove(tmp_path)
             if pdf_path.exists():
                 os.remove(pdf_path)
+
+
+def _analyse_ppt(presentation_file, file_extension, rules: list[BaseRule]):
+    """
+    Older .ppt files can be converted to .pptx first. Afterwards, the same logic as for .pptx is applied.
+    """
+    file_name = Path(presentation_file.name).stem
+    unique_id = uuid.uuid4().hex[:4]
+    subfolder_name = f"{file_name[:10]}_{unique_id}"
+
+    run_tmp_dir = Path(settings.TMP_DIR) / subfolder_name
+    run_tmp_dir.mkdir(parents=True, exist_ok=True)
+
+    with NamedTemporaryFile(delete=False, suffix=file_extension, dir=run_tmp_dir) as tmp:
+        if isinstance(presentation_file, Path):
+            tmp.write(presentation_file.read_bytes())
+        else:
+            tmp.write(presentation_file.read())
+        tmp_path = Path(tmp.name)
+        logger.debug(f"Saved uploaded PPT file to temporary path: {tmp_path}")
+
+    pptx_file = None
+    try:
+        pptx_path = convert_ppt_to_pptx(tmp_path, run_tmp_dir)
+        pptx_file = Path(pptx_path)
+
+        # Delegate to _analyse_pptx for the actual analysis.
+        return _analyse_pptx(pptx_file, ".pptx", rules)
+
+    finally:
+        if settings.DEBUG:
+            logger.debug(f"DEBUG mode is on. Not removing temporary files: {tmp_path} and {pptx_file}.")
+        else:
+            if tmp_path.exists():
+                os.remove(tmp_path)
+            if pptx_file and pptx_file.exists():
+                os.remove(pptx_file)
 
 
 # PDF Analysis as an example of how further document formats could be implemented.
@@ -320,7 +333,7 @@ def _analyse_pdf(presentation_file, file_extension, rules: list[BaseRule]):
     try:
         with pdfium.PdfDocument(tmp_path) as pdf:
             global_issues_collection: dict[RuleId, list[IssueDto]] = {}
-            slide_issues_collection: dict[RuleId, dict[int, list[IssueDto]]] = {}   # PDF pages act as slides.
+            slide_issues_collection: dict[RuleId, dict[int, list[IssueDto]]] = {}  # PDF pages act as slides.
 
             for rule in rules:
                 result = rule.apply(None, pdf)
