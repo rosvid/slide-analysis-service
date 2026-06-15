@@ -35,3 +35,24 @@ def get_context_snippet(text_page: pdfium.PdfTextPage, char_index: int, radius: 
 
     # Normalise whitespace.
     return " ".join(snippet.split())
+
+
+def extract_lines_from_text_page(text_page: pdfium.PdfTextPage) -> list[str]:
+    """
+    Extracts and processes the individual lines of text from a text page object.
+    """
+    lines: list[str] = []
+
+    rect_count = text_page.count_rects()
+    for rect_index in range(rect_count):
+        left, bottom, right, top = text_page.get_rect(rect_index)
+        rect_text = text_page.get_text_bounded(left=left, bottom=bottom, right=right, top=top)
+        if not rect_text:
+            continue
+
+        for raw_line in rect_text.replace("\r\n", "\n").replace("\r", "\n").split("\n"):
+            line = " ".join(raw_line.split())
+            if line:
+                lines.append(line)
+
+    return lines

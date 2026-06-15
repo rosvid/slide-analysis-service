@@ -30,8 +30,9 @@ def calculate_background_rgb(pil_image):
         total_sum = top.sum() + bottom.sum() + left.sum() + right.sum()
         total_pixels = top.size + bottom.size + left.size + right.size
 
+        # White text is needed for the next step (Dilation) to work properly.
         if (total_sum / total_pixels) > 127:
-            mask = ~mask    # invert the mask
+            mask = ~mask  # Invert the mask for white text.
 
         # 4. Dilation
         mask_dilated = cv2.dilate(mask, KERNEL_3X3, iterations=1)
@@ -42,7 +43,15 @@ def calculate_background_rgb(pil_image):
         if cv2.countNonZero(mask_bg) == 0:
             return None
 
-        # Mean
+        # DEBUG
+        # debug_dir = Path(tempfile.gettempdir()) / "pdfium_debug"
+        # debug_dir.mkdir(parents=True, exist_ok=True)
+        # unique_id = uuid.uuid4().hex[:4]
+        # cv2.imwrite(str(debug_dir / f"{unique_id}_mask_1_initial.png"), mask)
+        # cv2.imwrite(str(debug_dir / f"{unique_id}_mask_2_dilated.png"), mask_dilated)
+        # cv2.imwrite(str(debug_dir / f"{unique_id}_mask_3_bg.png"), mask_bg)
+
+        # Mean (as alternative to median)
         # mean_rgb = cv2.mean(img_numpy, mask=mask_bg)
         # rgb_0 = int(mean_rgb[0])
         # rgb_1 = int(mean_rgb[1])

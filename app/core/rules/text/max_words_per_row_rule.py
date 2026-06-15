@@ -5,6 +5,7 @@ from pypdfium2 import PdfDocument
 from core.dtos import IssueDto, RuleResultDto
 from core.enums import RuleId
 from core.rules.base_rule import BaseRule
+from core.utils.pdf_utils import extract_lines_from_text_page
 
 
 class MaxWordsPerRowRule(BaseRule):
@@ -28,7 +29,7 @@ class MaxWordsPerRowRule(BaseRule):
                 try:
                     page_issues: list[IssueDto] = []
 
-                    for line in _extract_lines_from_text_page(text_page):
+                    for line in extract_lines_from_text_page(text_page):
                         words = [word for word in line.split() if any(char.isalnum() for char in word)]
                         if len(words) <= self.max_words:
                             continue
@@ -56,24 +57,3 @@ class MaxWordsPerRowRule(BaseRule):
             global_issues=global_issues,
             slide_issues=slide_issues,
         )
-
-
-def _extract_lines_from_text_page(text_page) -> list[str]:
-    """
-    Extracts and processes the individual lines of text from a text page object.
-    """
-    lines: list[str] = []
-
-    rect_count = text_page.count_rects()
-    for rect_index in range(rect_count):
-        left, bottom, right, top = text_page.get_rect(rect_index)
-        rect_text = text_page.get_text_bounded(left=left, bottom=bottom, right=right, top=top)
-        if not rect_text:
-            continue
-
-        for raw_line in rect_text.replace("\r\n", "\n").replace("\r", "\n").split("\n"):
-            line = " ".join(raw_line.split())
-            if line:
-                lines.append(line)
-
-    return lines

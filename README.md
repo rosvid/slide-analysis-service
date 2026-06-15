@@ -117,7 +117,7 @@ For more API examples, see `httpRequests/test-rest.example.http`. This file can 
    - Windows: `.venv\Scripts\activate`
    - Linux/macOS: `source .venv/bin/activate`
 3. Install dependencies: `pip install -r requirements.txt`
-4. Compile the translations: `python app/manage.py compilemessages`.
+4. Compile the translations: `python app/manage.py compilemessages -l de`.
 5. Start the application: `python app/manage.py runserver`
 
 Note:
@@ -127,7 +127,7 @@ Note:
 
 ### Extending the Rule Set
 - Create new Rule ID in `app/core/enums.py` with a descriptive name in English.
-- Internationalisation: Mark new strings using _(...), as seen in `app/core/enums.py`. Run `python app/manage.py makemessages -l de` to create the new entries for the translations. Edit them and compile with `python app/manage.py compilemessages`.
+- Internationalisation: Mark new strings using _(...), as seen in `app/core/enums.py`. Run `python app/manage.py makemessages -l de --no-wrap` to create the new entries for the translations. Edit them and compile with `python app/manage.py compilemessages -l de`.
 - Add new rule class in `app/core/rules/{text,media,layout}/` inheriting from `BaseRule` and set `RULE_ID` in `app/core/enums.py`.
 - Rules may accept parameters in `__init__`; `AnalyserService` supports parameterised config strings (e.g. `TEXT_MIN_FONT_SIZE:18`).
 - Implement the `apply` method to check the rule against the slide content and return a `RuleResultDto` containing any violations.

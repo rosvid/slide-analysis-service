@@ -17,8 +17,6 @@ django.mo
 # App related
 .tmp/
 /test_slides/
-/app/scripts/
-/app/evaluation_presentations/
 
 # HTTP REST test environment
 /httpRequests/*

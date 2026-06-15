@@ -19,22 +19,28 @@ logger = logging.getLogger(__name__)
 
 RENDER_DPI = 150
 RENDER_SCALE = RENDER_DPI / 72
-PAD_X = 2
-PAD_Y = 2
+PAD_X = 3
+PAD_Y = 3
 
 
 class ContrastRatioRule(BaseRule):
     """
     Checks if the contrast ratio between text and background colours meets accessibility standards (WCAG 2.2).
+
+    Possible levels are AA, AAA and AA18 for large text. See: https://www.w3.org/TR/WCAG22/ for details.
     """
     RULE_ID = RuleId.LAYOUT_CONTRAST_RATIO
 
-    def __init__(self, level: str = "AA"):
+    def __init__(self, level: str = "AA18"):
         self.level = level
 
     def apply(self, pptx: Presentation | None, pdf: PdfDocument | None) -> RuleResultDto:
         global_issues: list[IssueDto] = []
         slide_issues: dict[int, list[IssueDto]] = {}
+
+        # DEBUG
+        # debug_dir = Path(tempfile.gettempdir()) / "pdfium_debug"
+        # debug_dir.mkdir(parents=True, exist_ok=True)
 
         if pdf:
             for page_index in range(len(pdf)):
@@ -57,8 +63,8 @@ class ContrastRatioRule(BaseRule):
                     page_height = page.get_height()
 
                     for char_index in range(text_page.count_chars()):
-                        text = text_page.get_text_range(char_index, 1).strip()
-                        if not text or not text.isalnum():
+                        char_text = text_page.get_text_range(char_index, 1).strip()
+                        if not char_text or not char_text.isalnum():
                             continue
 
                         char_color = _get_fill_color(text_page, char_index)
@@ -82,7 +88,7 @@ class ContrastRatioRule(BaseRule):
                         try:
                             char_image_pil = page_image_pil.crop(bbox)
                         except ValueError as e:
-                            logger.error(f"Could not crop char '{text}' on Slide {page_number}: {e}")
+                            logger.error(f"Could not crop char '{char_text}' on Slide {page_number}: {e}")
                             continue
 
                         bg_color = calculate_background_rgb(char_image_pil)
@@ -100,17 +106,19 @@ class ContrastRatioRule(BaseRule):
                             continue
 
                         context_snippet = get_context_snippet(text_page, char_index)
+
+                        # DEBUG
                         # save_filename = f"slide_{page_number}_char_{char_text}_{int(bbox[0])}_pdfium.png"
-                        # char_image_pil.save(output_dir / save_filename)
+                        # char_image_pil.save(debug_dir / save_filename)
 
                         issue = IssueDto(
                             rule_id=self.RULE_ID.value,
                             message=_("Insufficient contrast ratio for character '%(text)s' in context: '%(context_snippet)s'.") % {
-                                "text": text,
+                                "text": char_text,
                                 "context_snippet": context_snippet,
                             },
                             details={
-                                "text": text,
+                                "text": char_text,
                                 "context": context_snippet,
                                 "foreground_color": tuple(char_color[:3]),
                                 "background_color": bg_color,

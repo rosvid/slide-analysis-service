@@ -13,7 +13,7 @@ class MinImagePpiRule(BaseRule):
     """
     RULE_ID = RuleId.MEDIA_MIN_IMAGE_PPI
 
-    def __init__(self, min_ppi: int = 150):
+    def __init__(self, min_ppi: int = 102):
         self.min_ppi = min_ppi
 
     def apply(self, pptx: Presentation | None, pdf: PdfDocument | None) -> RuleResultDto:

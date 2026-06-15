@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-10 18:35+0200\n"
+"POT-Creation-Date: 2026-06-15 10:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -59,7 +59,7 @@ msgstr "Die minimale Schriftgröße, die in Präsentationen verwendet werden kan
 msgid "Insufficient contrast ratio for character '%(text)s' in context: '%(context_snippet)s'."
 msgstr "Unzureichendes Kontrastverhältnis für das Zeichen '%(text)s' im Kontext: '%(context_snippet)s'."
 
-#: .\app\core\rules\media\max_animations_per_slide_rule.py:29
+#: .\app\core\rules\media\max_animations_per_slide_rule.py:37
 #, python-format
 msgid "Slide contains %(animation_count)d animations, which exceeds the recommended maximum of %(max)d."
 msgstr "Folie enthält %(animation_count)d Animationen, was die empfohlene Höchstzahl von %(max)d überschreitet."
@@ -69,7 +69,7 @@ msgstr "Folie enthält %(animation_count)d Animationen, was die empfohlene Höch
 msgid "Slide contains %(image_count)d images, which exceeds the recommended maximum of %(max)d."
 msgstr "Folie enthält %(image_count)d Bilder, was die empfohlene Höchstzahl von %(max)d überschreitet."
 
-#: .\app\core\rules\media\min_image_ppi_rule.py:54
+#: .\app\core\rules\media\min_image_ppi_rule.py:53
 #, python-format
 msgid "Image '%(shape_name)s' has an effective resolution of %(lowest_ppi)s PPI, which is below the recommended minimum of %(min_ppi)s PPI."
 msgstr "Folie enthält ein Bild '%(shape_name)s' mit einer niedrigen effektiven PPI von %(lowest_ppi)s, die unter dem empfohlenen Minimum von %(min_ppi)s liegt."
@@ -84,7 +84,7 @@ msgstr "Folie enthält %(count)d Aufzählungspunkte, was die empfohlene Höchstz
 msgid "Presentation uses %(count)d different fonts, which exceeds the maximum allowed of %(max)d."
 msgstr "Präsentation verwendet %(count)d verschiedene Schriftarten, was die zulässige Höchstzahl von %(max)d überschreitet."
 
-#: .\app\core\rules\text\max_words_per_row_rule.py:38
+#: .\app\core\rules\text\max_words_per_row_rule.py:39
 #, python-format
 msgid "Row contains %(count)d words, which exceeds the recommended maximum of %(max)d."
 msgstr "Zeile enthält %(count)d Wörter, was die empfohlene Höchstzahl von %(max)d überschreitet."
@@ -94,10 +94,11 @@ msgstr "Zeile enthält %(count)d Wörter, was die empfohlene Höchstzahl von %(m
 msgid "Slide contains %(word_count)d words, which exceeds the recommended maximum of %(max)d."
 msgstr "Folie enthält %(word_count)d Wörter, was die empfohlene Höchstzahl von %(max)d überschreitet."
 
-#: .\app\core\rules\text\min_font_size_rule.py:49
-#, python-format
-msgid "Slide uses character '%(text)s' with size %(font_size)d, which is less than the recommended size of %(min)d."
-msgstr "Folie verwendet für das Zeichen '%(text)s' die Schriftgröße %(font_size)d, was unter der empfohlenen Mindestgröße von %(min)d liegt."
+#: .\app\core\rules\text\min_font_size_rule.py:54
+#, fuzzy, python-format
+#| msgid "Slide uses character '%(text)s' with size %(font_size)d, which is less than the recommended size of %(min)d."
+msgid "Slide uses character '%(text)s' with size %(font_size)d, which is less than the recommended size of %(min)d in context: '%(context_snippet)s'."
+msgstr "Folie verwendet für das Zeichen '%(text)s' die Schriftgröße %(font_size)d, was unter der empfohlenen Mindestgröße von %(min)d liegt im Kontext: '%(context_snippet)s'."
 
 #: .\app\settings\settings.py:171
 msgid "English"
