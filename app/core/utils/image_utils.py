@@ -1,14 +1,60 @@
 import logging
+from ctypes import c_uint
 
 import cv2
 import numpy
+import pypdfium2 as pdfium
+import pypdfium2.raw as pdfium_raw
 
 logger = logging.getLogger(__name__)
 
 KERNEL_3X3 = numpy.ones((3, 3), numpy.uint8)
 
 
-def calculate_background_rgb(pil_image):
+def get_char_fill_color_for_pdf_text_page(text_page: pdfium.PdfTextPage, char_index: int) -> (
+        tuple[int, int, int, int] | None):
+    """
+    Retrieves the fill colour of a specified character in a PDF text page.
+    """
+    # Create empty variables with type c_uint which will be overwritten after GetFillColor call.
+    r = c_uint()
+    g = c_uint()
+    b = c_uint()
+    a = c_uint()
+
+    if not pdfium_raw.FPDFText_GetFillColor(text_page, char_index, r, g, b, a):
+        return None
+
+    return int(r.value), int(g.value), int(b.value), int(a.value)
+
+
+def pdf_charbox_to_image_bbox(
+        *,
+        left: float,
+        bottom: float,
+        right: float,
+        top: float,
+        page_height: float,
+        scale: float,
+        image_size: tuple[int, int],
+        pad_x: int,
+        pad_y: int,
+) -> tuple[int, int, int, int] | None:
+    """
+    Converts character bounding box coordinates (PDF) from page-level units to image-level pixel coordinates,
+    while applying padding and ensuring the resulting bounding box is valid and within the image boundaries.
+    """
+    x0 = max(0, int(left * scale) - pad_x)
+    y0 = max(0, int((page_height - top) * scale) - pad_y)
+    x1 = min(image_size[0], int(right * scale) + pad_x)
+    y1 = min(image_size[1], int((page_height - bottom) * scale) + pad_y)
+
+    if x1 <= x0 or y1 <= y0:
+        return None
+    return x0, y0, x1, y1
+
+
+def calculate_background_rgb(pil_image) -> tuple[int, int, int] | None:
     """
     Calculates the background colour extremely efficiently directly from the PIL Image.
     Returns (r, g, b) or None in case of an error.

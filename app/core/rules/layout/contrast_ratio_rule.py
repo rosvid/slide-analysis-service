@@ -1,8 +1,5 @@
 import logging
-from ctypes import c_uint
 
-import pypdfium2 as pdfium
-import pypdfium2.raw as pdfium_raw
 from color_contrast import AccessibilityLevel, check_contrast
 from colour import Color
 from django.utils.translation import gettext as _
@@ -12,7 +9,7 @@ from pypdfium2 import PdfDocument
 from core.dtos import IssueDto, RuleResultDto
 from core.enums import RuleId
 from core.rules.base_rule import BaseRule
-from core.utils.image_utils import calculate_background_rgb
+from core.utils.image_utils import calculate_background_rgb, get_char_fill_color_for_pdf_text_page, pdf_charbox_to_image_bbox
 from core.utils.pdf_utils import get_context_snippet
 
 logger = logging.getLogger(__name__)
@@ -67,12 +64,12 @@ class ContrastRatioRule(BaseRule):
                         if not char_text or not char_text.isalnum():
                             continue
 
-                        char_color = _get_fill_color(text_page, char_index)
+                        char_color = get_char_fill_color_for_pdf_text_page(text_page, char_index)
                         if char_color is None:
                             continue
 
                         left, bottom, right, top = text_page.get_charbox(char_index)
-                        bbox = _charbox_to_image_bbox(
+                        bbox = pdf_charbox_to_image_bbox(
                             left=left,
                             bottom=bottom,
                             right=right,
@@ -80,6 +77,8 @@ class ContrastRatioRule(BaseRule):
                             page_height=page_height,
                             scale=RENDER_SCALE,
                             image_size=page_image_pil.size,
+                            pad_x=PAD_X,
+                            pad_y=PAD_Y,
                         )
 
                         if bbox is None:
@@ -134,36 +133,3 @@ class ContrastRatioRule(BaseRule):
                     page.close()
 
         return RuleResultDto(global_issues=global_issues, slide_issues=slide_issues)
-
-
-def _get_fill_color(text_page: pdfium.PdfTextPage, char_index: int) -> tuple[int, int, int, int] | None:
-    # Create empty variables with type c_uint which will be overwritten after GetFillColor call.
-    r = c_uint()
-    g = c_uint()
-    b = c_uint()
-    a = c_uint()
-
-    if not pdfium_raw.FPDFText_GetFillColor(text_page, char_index, r, g, b, a):
-        return None
-
-    return int(r.value), int(g.value), int(b.value), int(a.value)
-
-
-def _charbox_to_image_bbox(
-        *,
-        left: float,
-        bottom: float,
-        right: float,
-        top: float,
-        page_height: float,
-        scale: float,
-        image_size: tuple[int, int],
-) -> tuple[int, int, int, int] | None:
-    x0 = max(0, int(left * scale) - PAD_X)
-    y0 = max(0, int((page_height - top) * scale) - PAD_Y)
-    x1 = min(image_size[0], int(right * scale) + PAD_X)
-    y1 = min(image_size[1], int((page_height - bottom) * scale) + PAD_Y)
-
-    if x1 <= x0 or y1 <= y0:
-        return None
-    return x0, y0, x1, y1
