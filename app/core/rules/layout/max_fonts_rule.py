@@ -17,7 +17,7 @@ class MaxFontsRule(BaseRule):
     """
     Rule to ensure that the maximum number of different fonts used in a presentation is not more than 3.
     """
-    RULE_ID = RuleId.TEXT_MAX_FONTS
+    RULE_ID = RuleId.LAYOUT_MAX_FONTS
 
     def __init__(self, max_fonts: int = 3):
         self.max_fonts = max_fonts

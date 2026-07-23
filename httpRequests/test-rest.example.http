@@ -25,7 +25,7 @@ Content-Disposition: form-data; name="file"; filename="Rules_test_01.pptx"
 --WebAppBoundary
 Content-Disposition: form-data; name="rules"
 
-TEXT_MAX_FONTS:2
+LAYOUT_MAX_FONTS:2
 --WebAppBoundary
 Content-Disposition: form-data; name="rules"
 

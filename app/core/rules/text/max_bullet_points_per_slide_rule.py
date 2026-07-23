@@ -1,9 +1,10 @@
 import logging
+import re
 
 from django.utils.translation import gettext as _
-from pypdfium2 import PdfDocument
 from pptx.enum.shapes import MSO_SHAPE_TYPE, PP_PLACEHOLDER_TYPE
 from pptx.presentation import Presentation
+from pypdfium2 import PdfDocument
 
 from core.dtos import IssueDto, RuleResultDto
 from core.enums import RuleId
@@ -51,6 +52,11 @@ class MaxBulletPointsPerSlideRule(BaseRule):
                             placeholder_format = shape.placeholder_format
                             if placeholder_format.type not in [PP_PLACEHOLDER_TYPE.BODY, PP_PLACEHOLDER_TYPE.OBJECT]:  # body and obj type
                                 continue
+
+                        if re.match(r'^\s*[-*•>+]', paragraph.text):
+                            logger.debug(f"Paragraph: '{paragraph.text}' has a manual bullet.")
+                            bullet_points_count += 1
+                            continue
 
                         if has_non_bullet(paragraph._pPr):
                             continue

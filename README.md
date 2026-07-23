@@ -45,7 +45,7 @@ Note:
 **Headers:**
 - `X-API-Key`: The secret API key (defined in `.env`).
 - `Accept-Language`: `en` or `de`.
-- Optional: Use a rules config list to check only specific rules and/or pass parameters. Include one rules form field per rule (syntax: RULE_ID or RULE_ID:VALUE, e.g. MEDIA_MAX_ANIMATIONS_PER_SLIDE, TEXT_MAX_FONTS:2).
+- Optional: Use a rules config list to check only specific rules and/or pass parameters. Include one rules form field per rule (syntax: RULE_ID or RULE_ID:VALUE, e.g. MEDIA_MAX_ANIMATIONS_PER_SLIDE, LAYOUT_MAX_FONTS:2).
 
 **Body (multipart/form-data):**
 - `file`: The presentation file to analyse.
@@ -67,12 +67,12 @@ Example response:
       "slides_with_issues": 1,
       "rules_checked": [
          "MEDIA_MAX_ANIMATIONS_PER_SLIDE",
-         "TEXT_MAX_FONTS"
+         "LAYOUT_MAX_FONTS"
       ]
    },
    "global_issues": [
       {
-         "rule_id": "TEXT_MAX_FONTS",
+         "rule_id": "LAYOUT_MAX_FONTS",
          "message": "Presentation uses 3 different fonts, which exceeds the maximum allowed of 2.",
          "details": {
             "fonts_used": [
@@ -129,5 +129,5 @@ Note:
 - Create new Rule ID in `app/core/enums.py` with a descriptive name in English.
 - Internationalisation: Mark new strings using _(...), as seen in `app/core/enums.py`. Run `python app/manage.py makemessages -l de --no-wrap` to create the new entries for the translations. Edit them and compile with `python app/manage.py compilemessages -l de`.
 - Add new rule class in `app/core/rules/{text,media,layout}/` inheriting from `BaseRule` and set `RULE_ID` in `app/core/enums.py`.
-- Rules may accept parameters in `__init__`; `AnalyserService` supports parameterised config strings (e.g. `TEXT_MIN_FONT_SIZE:18`).
+- Rules may accept parameters in `__init__`; `AnalyserService` supports parameterised config strings (e.g. `LAYOUT_MIN_FONT_SIZE:18`).
 - Implement the `apply` method to check the rule against the slide content and return a `RuleResultDto` containing any violations.

@@ -14,7 +14,7 @@ class MinFontSizeRule(BaseRule):
     Rule to ensure that the minimum rendered font size on a slide is not less than the configured threshold.
     Finds the character with the smallest font size and reports it as an issue.
     """
-    RULE_ID = RuleId.TEXT_MIN_FONT_SIZE
+    RULE_ID = RuleId.LAYOUT_MIN_FONT_SIZE
 
     def __init__(self, min_font_size: int = 24):
         self.min_font_size = min_font_size

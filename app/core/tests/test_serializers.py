@@ -28,7 +28,7 @@ class SerializersTest(SimpleTestCase):
             total_issues_found=5,
             slides_with_issues=3,
             rules_checked=[
-                "TEXT_MAX_FONTS",
+                "LAYOUT_MAX_FONTS",
                 "TEXT_MAX_WORDS_PER_ROW",
                 "TEXT_MAX_WORDS_PER_SLIDE",
                 "TEXT_MAX_BULLET_POINTS_PER_SLIDE",
@@ -38,7 +38,7 @@ class SerializersTest(SimpleTestCase):
 
         global_issues_dto = [
             IssueDto(
-                rule_id="TEXT_MAX_FONTS",
+                rule_id="LAYOUT_MAX_FONTS",
                 message="Presentation uses 3 different fonts, which exceeds the maximum allowed of 2.",
                 details={"fonts_used": ["Arial", "Calibri", "Times New Roman"], "limit": 2}
             )
